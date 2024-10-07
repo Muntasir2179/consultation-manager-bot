@@ -1,41 +1,27 @@
-import os
-from dotenv import load_dotenv
-from twilio.rest import Client
-from django.shortcuts import render, HttpResponse
-from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render
+from .models import Customer
 
 
-# loading the environment variables
-# load_dotenv()
+# function to fetch all the data to the dashboard
+def fetch_data(request):
+    # fetching all the data from the database
+    customers = Customer.objects.all().values('user_id',
+                                              'person_name',
+                                              'phone_number',
+                                              'age',
+                                              'appointment_date',
+                                              'appointment_time',
+                                              'appointment_end_time',
+                                              'status')
+    return render(request=request, template_name='index.html', context={'content': customers})
 
 
-# client = Client(os.environ["TWILIO_ACCOUNT_SID"], os.environ["TWILIO_AUTH_TOKEN"])
-
-# # Create your views here.
-# @csrf_exempt
-# def bot(request):
-#     sender_name = request.POST["ProfileName"]
-#     message_type = request.POST["MessageType"]
-#     whatsapp_id = request.POST["WaId"]
-#     message_status = request.POST["SmsStatus"]
-#     message_content = request.POST["Body"]
-#     receiver_number = request.POST["To"]
-#     sender_number = request.POST["From"]
-    
-#     client.messages.create(from_=receiver_number,
-#                            body=f"Hi {sender_name}, how's it going",
-#                            to=sender_number)
-    
-#     return HttpResponse(content="Hi I am Muntasir")
+# function for signin
+def login(request):
+    return render(request=request, template_name='login.html')
 
 
-def bot(request):
-    return render(request=request, template_name='index.html')
+# function for signup
+def register(request):
+    return render(request=request, template_name='register.html')
 
-
-def signin(request):
-    return render(request=request, template_name='signin.html')
-
-
-def signup(request):
-    return render(request=request, template_name='signup.html')

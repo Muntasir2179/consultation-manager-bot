@@ -152,8 +152,7 @@
                   <h5 class="card-title mb-0">Schedules</h5>
                 </div>
                 <div class="card-body">
-                  <table id="example" class="table table-bordered dt-responsive nowrap table-striped align-middle"
-                    style="width: 100%">
+                  <table id="example" class="table table-bordered dt-responsive nowrap table-striped align-middle" style="width: 100%">
                     <thead>
                       <tr>
                         <th data-ordering="false">User ID</th>
@@ -168,15 +167,16 @@
                       </tr>
                     </thead>
                     <tbody>
+                      {% for customer in content %}
                       <tr>
-                        <td>VLZ1400087402</td>
-                        <td>John Doe</td>
-                        <td>+1234567890</td>
-                        <td>61</td>
-                        <td>03 Oct, 2024</td>
-                        <td>03:00 PM</td>
-                        <td>04:00 PM</td>
-                        <td><span class="badge bg-danger">High</span></td>
+                        <td>{{customer.user_id}}</td>
+                        <td>{{customer.person_name}}</td>
+                        <td>{{customer.phone_number}}</td>
+                        <td>{{customer.age}}</td>
+                        <td>{{customer.appointment_date}}</td>
+                        <td>{{customer.appointment_time}}</td>
+                        <td>{{customer.appointment_end_time}}</td>
+                        <td><span class="badge bg-danger">{{customer.status}}</span></td>
                         <td>
                           <div class="dropdown d-inline-block">
                             <button class="btn btn-soft-secondary btn-sm dropdown" type="button"
@@ -204,6 +204,7 @@
                           </div>
                         </td>
                       </tr>
+                      {% endfor %}
                     </tbody>
                   </table>
                 </div>

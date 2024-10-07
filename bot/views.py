@@ -31,3 +31,11 @@ from django.views.decorators.csrf import csrf_exempt
 
 def bot(request):
     return render(request=request, template_name='index.html')
+
+
+def signin(request):
+    return render(request=request, template_name='signin.html')
+
+
+def signup(request):
+    return render(request=request, template_name='signup.html')

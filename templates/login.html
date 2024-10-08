@@ -11,7 +11,7 @@
 >
   <head>
     <meta charset="utf-8" />
-    <title>Schedules Management Template</title>
+    <title>Login Page</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta content="Premium Schedule Management Application" name="description"/>
     <meta content="Muntasir" name="author" />
@@ -58,10 +58,11 @@
                     <p class="text-muted">Sign in to continue tracking.</p>
                   </div>
                   <div class="p-2 mt-4">
-                    <form action="index.html">
+                    <form method="POST" action="/login/">
+                      {% csrf_token %}
                       <div class="mb-3">
                         <label for="username" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="username" placeholder="Enter username"/>
+                        <input type="text" class="form-control" name="username" id="username" placeholder="Enter username"/>
                       </div>
 
                       <div class="mb-3">
@@ -70,7 +71,7 @@
                         </div>
                         <label class="form-label" for="password-input">Password</label>
                         <div class="position-relative auth-pass-inputgroup mb-3">
-                          <input type="password" class="form-control pe-5 password-input" placeholder="Enter password" id="password-input"/>
+                          <input type="password" class="form-control pe-5 password-input" name="password" placeholder="Enter password" id="password-input"/>
                           <button class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted password-addon" type="button" id="password-addon" >
                             <i class="ri-eye-fill align-middle"></i>
                           </button>
@@ -78,9 +79,7 @@
                       </div>
 
                       <div class="mt-4">
-                        <button class="btn btn-success w-100" type="submit">
-                          Sign In
-                        </button>
+                        <button class="btn btn-success w-100" type="submit">Sign In</button>
                       </div>
                     </form>
                   </div>
@@ -90,7 +89,7 @@
               <div class="mt-4 text-center">
                 <p class="mb-0">
                   Don't have an account ?
-                  <a href="signup.html" class="fw-semibold text-primary text-decoration-underline">Signup</a>
+                  <a href="{% url "register" %}" class="fw-semibold text-primary text-decoration-underline">Register</a>
                 </p>
               </div>
             </div>

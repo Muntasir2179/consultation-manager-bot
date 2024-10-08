@@ -2,3 +2,4 @@ __pycache__
 migrations
 .env
 config.yaml
+credentials.txt

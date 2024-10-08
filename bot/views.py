@@ -1,6 +1,11 @@
 from django.shortcuts import render, HttpResponse
 from .models import Customer
 
+# for chatbot agent
+from .agent import DatabaseAgent
+
+
+database_agent = DatabaseAgent()
 
 # function to fetch all the data to the dashboard
 def fetch_data(request):
@@ -24,7 +29,8 @@ def chat(request):
 # function for bot response
 def get_response(request):
     user_message = request.GET.get('userMessage')
-    return HttpResponse(user_message)
+    agent_response = database_agent.get_response(query=user_message)
+    return HttpResponse(agent_response)
 
 
 # function for signin

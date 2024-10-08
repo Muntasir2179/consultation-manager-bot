@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, HttpResponse
 from .models import Customer
 
 
@@ -14,6 +14,17 @@ def fetch_data(request):
                                               'appointment_end_time',
                                               'status')
     return render(request=request, template_name='index.html', context={'content': customers})
+
+
+# function for chatbot
+def chat(request):
+    return render(request=request, template_name="chat.html")
+
+
+# function for bot response
+def get_response(request):
+    user_message = request.GET.get('userMessage')
+    return HttpResponse(user_message)
 
 
 # function for signin

@@ -198,16 +198,17 @@
                                 </a>
                               </li>
                               <li>
-                                <a href="#!" class="dropdown-item edit-item-btn" data-bs-toggle="modal" data-bs-target="#editCustomerModal"
-                                   data-userid="{{customer.user_id}}"
-                                   data-name="{{customer.person_name}}"
-                                   data-phone="{{customer.phone_number}}"
-                                   data-age="{{customer.age}}"
-                                   data-appointmentdate="{{customer.appointment_date}}"
-                                   data-appointmenttime="{{customer.appointment_time}}"
-                                   data-appointmentendtime="{{customer.appointment_end_time}}"
-                                   data-status="{{customer.status}}">
-                                  <i class="ri-pencil-fill align-bottom me-2 text-muted"></i> Edit
+                                <a class="dropdown-item edit-item-btn" data-bs-toggle="modal" data-bs-target="#editModal" 
+                                   data-user-id="{{ customer.user_id }}" 
+                                   data-person-name="{{ customer.person_name }}" 
+                                   data-phone-number="{{ customer.phone_number }}" 
+                                   data-age="{{ customer.age }}" 
+                                   data-appointment-date="{{ customer.appointment_date }}" 
+                                   data-appointment-time="{{ customer.appointment_time }}" 
+                                   data-appointment-end-time="{{ customer.appointment_end_time }}" 
+                                   data-status="{{ customer.status }}">
+                                  <i class="ri-pencil-fill align-bottom me-2 text-muted"></i>
+                                  Edit
                                 </a>
                               </li>
                               <li>
@@ -247,59 +248,54 @@
                       </div>
 
                       {% comment %} Edit Modal Structure  {% endcomment %}
-                      <div class="modal fade" id="editCustomerModal" tabindex="-1" aria-labelledby="editCustomerModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
                           <div class="modal-content">
                             <div class="modal-header">
-                              <h5 class="modal-title" id="editCustomerModalLabel">Edit Customer Details</h5>
+                              <h5 class="modal-title" id="editModalLabel">Edit Customer Information</h5>
                               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <form id="editCustomerForm">
-                              {% csrf_token %}
-                              <div class="modal-body">
-                                {% comment %} Hidden user_id field (non-editable) {% endcomment %}
-                                <input type="hidden" id="editUserId" name="user_id" readonly>
-                                
-                                {% comment %} Editable fields {% endcomment %}
+                            <div class="modal-body">
+                              <form id="editCustomerForm">
                                 <div class="mb-3">
-                                  <label for="editPersonName" class="form-label">Name</label>
-                                  <input type="text" class="form-control" id="editPersonName" name="person_name" required>
+                                  <label for="personName" class="form-label">Name</label>
+                                  <input type="text" class="form-control" id="personName" name="person_name">
                                 </div>
                                 <div class="mb-3">
-                                  <label for="editPhoneNumber" class="form-label">Phone Number</label>
-                                  <input type="text" class="form-control" id="editPhoneNumber" name="phone_number" required>
+                                  <label for="phoneNumber" class="form-label">Phone Number</label>
+                                  <input type="text" class="form-control" id="phoneNumber" name="phone_number">
                                 </div>
                                 <div class="mb-3">
-                                  <label for="editAge" class="form-label">Age</label>
-                                  <input type="number" class="form-control" id="editAge" name="age" required>
+                                  <label for="age" class="form-label">Age</label>
+                                  <input type="number" class="form-control" id="age" name="age">
                                 </div>
                                 <div class="mb-3">
-                                  <label for="editAppointmentDate" class="form-label">Appointment Date</label>
-                                  <input type="date" class="form-control" id="editAppointmentDate" name="appointment_date" required>
+                                  <label for="appointmentDate" class="form-label">Appointment Date</label>
+                                  <input type="date" class="form-control" id="appointmentDate" name="appointment_date">
                                 </div>
                                 <div class="mb-3">
-                                  <label for="editAppointmentTime" class="form-label">Appointment Time</label>
-                                  <input type="time" class="form-control" id="editAppointmentTime" name="appointment_time" required>
+                                  <label for="appointmentTime" class="form-label">Appointment Time</label>
+                                  <input type="time" class="form-control" id="appointmentTime" name="appointment_time">
                                 </div>
                                 <div class="mb-3">
-                                  <label for="editAppointmentEndTime" class="form-label">Appointment End Time</label>
-                                  <input type="time" class="form-control" id="editAppointmentEndTime" name="appointment_end_time" required>
+                                  <label for="appointmentEndTime" class="form-label">Appointment End Time</label>
+                                  <input type="time" class="form-control" id="appointmentEndTime" name="appointment_end_time">
                                 </div>
                                 <div class="mb-3">
-                                  <label for="editStatus" class="form-label">Status</label>
-                                  <select class="form-select" id="editStatus" name="status" required>
+                                  <label for="status" class="form-label">Status</label>
+                                  <select class="form-control" id="status" name="status">
                                     <option value="Pending">Pending</option>
-                                    <option value="Completed">Approved</option>
-                                    <option value="Cancelled">Completed</option>
-                                    <option value="Cancelled">Rejected</option>
+                                    <option value="Approved">Approved</option>
+                                    <option value="Rejected">Rejected</option>
+                                    <option value="Completed">Completed</option>
                                   </select>
                                 </div>
-                              </div>
-                              <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary">Update</button>
-                              </div>
-                            </form>
+                              </form>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                              <button type="button" class="btn btn-primary" id="updateCustomerBtn">Update</button>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -397,83 +393,145 @@
   });
 
   {% comment %} edit data script {% endcomment %}
-  document.addEventListener("DOMContentLoaded", function() {
-    var editButtons = document.querySelectorAll('.edit-item-btn');
-  
-    editButtons.forEach(function(button) {
-      button.addEventListener('click', function() {
-        // Get customer details from data attributes
-        var userId = this.getAttribute('data-userid');
-        var name = this.getAttribute('data-name');
-        var phone = this.getAttribute('data-phone');
-        var age = this.getAttribute('data-age');
-        var appointmentDate = this.getAttribute('data-appointmentdate');
-        var appointmentTime = this.getAttribute('data-appointmenttime');
-        var appointmentEndTime = this.getAttribute('data-appointmentendtime');
-        var status = this.getAttribute('data-status');
-  
-        // Populate the edit form with customer details
-        document.getElementById('editUserId').value = userId;
-        document.getElementById('editPersonName').value = name;
-        document.getElementById('editPhoneNumber').value = phone;
-        document.getElementById('editAge').value = age;
-        document.getElementById('editAppointmentDate').value = appointmentDate;
-        document.getElementById('editAppointmentTime').value = appointmentTime;
-        document.getElementById('editAppointmentEndTime').value = appointmentEndTime;
-        document.getElementById('editStatus').value = status;
-      });
-    });
-  
-    // Handle form submission (you can adjust this according to your backend setup)
-    document.getElementById('editCustomerForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      // Here you would typically make an AJAX call to update the customer data in your backend
-      // For demonstration, let's just log the form data
-  
-      var formData = new FormData(this);
-      console.log(Object.fromEntries(formData));
-  
-      // Close the modal after submission
-      var editModal = new bootstrap.Modal(document.getElementById('editCustomerModal'));
-      editModal.hide();
-  
-      // Optionally, refresh the page or the customer table to show updated data
-    });
-  });
-
-  {% comment %} delete data {% endcomment %}
   document.addEventListener('DOMContentLoaded', function () {
-    let userIdToDelete = null;
+    let userIdToEdit = null;
 
-    // Triggered when delete button is clicked
-    document.querySelectorAll('.remove-item-btn').forEach(function(button) {
+    // Triggered when the "Edit" button is clicked, and pre-fill the modal with customer data
+    document.querySelectorAll('.edit-item-btn').forEach(function(button) {
       button.addEventListener('click', function() {
-        userIdToDelete = this.getAttribute('data-user-id');
+        userIdToEdit = this.getAttribute('data-user-id');
+        
+        // Populate the modal form with the customer's current data
+        document.getElementById('personName').value = this.getAttribute('data-person-name');
+        document.getElementById('phoneNumber').value = this.getAttribute('data-phone-number');
+        document.getElementById('age').value = this.getAttribute('data-age');
+        document.getElementById('appointmentDate').value = this.getAttribute('data-appointment-date');
+        document.getElementById('appointmentTime').value = this.getAttribute('data-appointment-time');
+        document.getElementById('appointmentEndTime').value = this.getAttribute('data-appointment-end-time');
+        
+        // For the status field, check if it's a dropdown (select) or a text input
+        const statusField = document.getElementById('status');
+        const status = this.getAttribute('data-status');
+
+        if (statusField.tagName === 'SELECT') {
+          // If it's a dropdown (select), set the selected value
+          for (let option of statusField.options) {
+            if (option.value === status) {
+              option.selected = true;
+              break;
+            }
+          }
+        } else {
+          // If it's a text input, set the value directly
+          statusField.value = status;
+        }
       });
     });
 
-    // Triggered when the "Confirm Delete" button in the modal is clicked
-    document.getElementById('confirmDelete').addEventListener('click', function() {
-      if (userIdToDelete) {
-        // Perform the deletion via a POST request
-        fetch(`/delete-customer/${userIdToDelete}/`, {
+    // Triggered when the "Update" button in the modal is clicked
+    document.getElementById('updateCustomerBtn').addEventListener('click', function() {
+      if (userIdToEdit) {
+        // Get the updated data from the form
+        const updatedData = {
+          person_name: document.getElementById('personName').value,
+          phone_number: document.getElementById('phoneNumber').value,
+          age: document.getElementById('age').value,
+          appointment_date: document.getElementById('appointmentDate').value,
+          appointment_time: document.getElementById('appointmentTime').value,
+          appointment_end_time: document.getElementById('appointmentEndTime').value,
+          status: document.getElementById('status').value
+        };
+
+        // Perform the update via a POST request
+        fetch(`/edit-customer/${userIdToEdit}/`, {
           method: 'POST',
           headers: {
             'X-CSRFToken': '{{ csrf_token }}',
             'Content-Type': 'application/json',
-          }
+          },
+          body: JSON.stringify(updatedData)
         })
         .then(response => response.json())
         .then(data => {
           if (data.success) {
             // Hide the modal
-            let modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+            let modal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
             modal.hide();
-            
-            // Remove the deleted row from the table without reloading the page
-            let row = document.getElementById(`customer-${userIdToDelete}`);
-            row.parentNode.removeChild(row);
+
+            // Update the corresponding row in the table
+            const row = document.getElementById(`customer-${userIdToEdit}`);
+            row.querySelector('td:nth-child(2)').innerText = updatedData.person_name;
+            row.querySelector('td:nth-child(3)').innerText = updatedData.phone_number;
+            row.querySelector('td:nth-child(4)').innerText = updatedData.age;
+            row.querySelector('td:nth-child(5)').innerText = updatedData.appointment_date;
+            row.querySelector('td:nth-child(6)').innerText = updatedData.appointment_time;
+            row.querySelector('td:nth-child(7)').innerText = updatedData.appointment_end_time;
+            row.querySelector('td:nth-child(8)').innerHTML = `<span class="badge bg-danger">${updatedData.status}</span>`;
+          }
+        });
+      }
+    });
+  });
+
+  {% comment %} edit data {% endcomment %}
+  document.addEventListener('DOMContentLoaded', function () {
+    let userIdToEdit = null;
+
+    // Triggered when the "Edit" button is clicked, and pre-fill the modal with customer data
+    document.querySelectorAll('.edit-item-btn').forEach(function(button) {
+      button.addEventListener('click', function() {
+        userIdToEdit = this.getAttribute('data-user-id');
+        
+        // Populate the modal form with the customer's current data
+        document.getElementById('personName').value = this.getAttribute('data-person-name');
+        document.getElementById('phoneNumber').value = this.getAttribute('data-phone-number');
+        document.getElementById('age').value = this.getAttribute('data-age');
+        document.getElementById('appointmentDate').value = this.getAttribute('data-appointment-date');
+        document.getElementById('appointmentTime').value = this.getAttribute('data-appointment-time');
+        document.getElementById('appointmentEndTime').value = this.getAttribute('data-appointment-end-time');
+        document.getElementById('status').value = this.getAttribute('data-status');
+      });
+    });
+
+    // Triggered when the "Update" button in the modal is clicked
+    document.getElementById('updateCustomerBtn').addEventListener('click', function() {
+      if (userIdToEdit) {
+        // Get the updated data from the form
+        const updatedData = {
+          person_name: document.getElementById('personName').value,
+          phone_number: document.getElementById('phoneNumber').value,
+          age: document.getElementById('age').value,
+          appointment_date: document.getElementById('appointmentDate').value,
+          appointment_time: document.getElementById('appointmentTime').value,
+          appointment_end_time: document.getElementById('appointmentEndTime').value,
+          status: document.getElementById('status').value
+        };
+
+        // Perform the update via a POST request
+        fetch(`/edit-customer/${userIdToEdit}/`, {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(updatedData)
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Hide the modal
+            let modal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
+            modal.hide();
+
+            // Update the corresponding row in the table
+            const row = document.getElementById(`customer-${userIdToEdit}`);
+            row.querySelector('td:nth-child(2)').innerText = updatedData.person_name;
+            row.querySelector('td:nth-child(3)').innerText = updatedData.phone_number;
+            row.querySelector('td:nth-child(4)').innerText = updatedData.age;
+            row.querySelector('td:nth-child(5)').innerText = updatedData.appointment_date;
+            row.querySelector('td:nth-child(6)').innerText = updatedData.appointment_time;
+            row.querySelector('td:nth-child(7)').innerText = updatedData.appointment_end_time;
+            row.querySelector('td:nth-child(8)').innerHTML = `<span class="badge bg-danger">${updatedData.status}</span>`;
           }
         });
       }

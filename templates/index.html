@@ -176,7 +176,17 @@
                         <td>{{customer.appointment_date}}</td>
                         <td>{{customer.appointment_time}}</td>
                         <td>{{customer.appointment_end_time}}</td>
-                        <td><span class="badge bg-danger">{{customer.status}}</span></td>
+                        <td>
+                          {% if customer.status == "Approved" %}
+                          <span class="badge bg-primary">{{customer.status}}</span>
+                          {% elif customer.status == "Pending" %}
+                          <span class="badge bg-warning">{{customer.status}}</span>
+                          {% elif customer.status == "Completed" %}
+                          <span class="badge bg-success">{{customer.status}}</span>
+                          {% elif customer.status == "Rejected" %}
+                          <span class="badge bg-danger">{{customer.status}}</span>
+                          {% endif %}
+                        </td>
                         <td>
                           <div class="dropdown d-inline-block">
                             <button class="btn btn-soft-secondary btn-sm dropdown" type="button"
@@ -212,9 +222,9 @@
                                 </a>
                               </li>
                               <li>
-                                <a class="dropdown-item remove-item-btn" data-bs-toggle="modal" data-bs-target="#deleteModal" data-user-id="{{ customer.user_id }}">
-                                    <i class="ri-delete-bin-fill align-bottom me-2 text-muted"></i>
-                                    Delete
+                                <a href="#!" class="dropdown-item remove-item-btn" data-bs-toggle="modal" data-bs-target="#deleteModal" data-user-id="{{ customer.user_id }}">
+                                  <i class="ri-delete-bin-fill align-bottom me-2 text-muted"></i>
+                                  Delete
                                 </a>
                               </li>
                             </ul>
@@ -282,8 +292,8 @@
                                   <input type="time" class="form-control" id="appointmentEndTime" name="appointment_end_time">
                                 </div>
                                 <div class="mb-3">
-                                  <label for="status" class="form-label">Status</label>
-                                  <select class="form-control" id="status" name="status">
+                                  <label for="appointmentStatus" class="form-label">Status</label>
+                                  <select class="form-control" id="appointmentStatus" name="status">
                                     <option value="Pending">Pending</option>
                                     <option value="Approved">Approved</option>
                                     <option value="Rejected">Rejected</option>
@@ -410,7 +420,7 @@
         document.getElementById('appointmentEndTime').value = this.getAttribute('data-appointment-end-time');
         
         // For the status field, check if it's a dropdown (select) or a text input
-        const statusField = document.getElementById('status');
+        const statusField = document.getElementById('appointmentStatus');
         const status = this.getAttribute('data-status');
 
         if (statusField.tagName === 'SELECT') {
@@ -439,9 +449,10 @@
           appointment_date: document.getElementById('appointmentDate').value,
           appointment_time: document.getElementById('appointmentTime').value,
           appointment_end_time: document.getElementById('appointmentEndTime').value,
-          status: document.getElementById('status').value
+          status: document.getElementById('appointmentStatus').value
         };
 
+        console.log("updatedData", updatedData);
         // Perform the update via a POST request
         fetch(`/edit-customer/${userIdToEdit}/`, {
           method: 'POST',
@@ -457,7 +468,18 @@
             // Hide the modal
             let modal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
             modal.hide();
-
+            
+            let statusBadge = "bg-primary";
+            if (updatedData.status == "Rejected"){
+              statusBadge = "bg-danger";
+            }
+            else if (updatedData.status == "Completed"){
+              statusBadge = "bg-success";
+            }
+            else if (updatedData.status == "Pending"){
+              statusBadge = "bg-warning";
+            }
+            
             // Update the corresponding row in the table
             const row = document.getElementById(`customer-${userIdToEdit}`);
             row.querySelector('td:nth-child(2)').innerText = updatedData.person_name;
@@ -466,72 +488,44 @@
             row.querySelector('td:nth-child(5)').innerText = updatedData.appointment_date;
             row.querySelector('td:nth-child(6)').innerText = updatedData.appointment_time;
             row.querySelector('td:nth-child(7)').innerText = updatedData.appointment_end_time;
-            row.querySelector('td:nth-child(8)').innerHTML = `<span class="badge bg-danger">${updatedData.status}</span>`;
+            row.querySelector('td:nth-child(8)').innerHTML = `<span class="badge ${statusBadge}">${updatedData.status}</span>`;
           }
         });
       }
     });
   });
 
-  {% comment %} edit data {% endcomment %}
+  {% comment %} delete action {% endcomment %}
   document.addEventListener('DOMContentLoaded', function () {
-    let userIdToEdit = null;
+    let userIdToDelete = null;
 
-    // Triggered when the "Edit" button is clicked, and pre-fill the modal with customer data
-    document.querySelectorAll('.edit-item-btn').forEach(function(button) {
+    // Triggered when delete button is clicked
+    document.querySelectorAll('.remove-item-btn').forEach(function(button) {
       button.addEventListener('click', function() {
-        userIdToEdit = this.getAttribute('data-user-id');
-        
-        // Populate the modal form with the customer's current data
-        document.getElementById('personName').value = this.getAttribute('data-person-name');
-        document.getElementById('phoneNumber').value = this.getAttribute('data-phone-number');
-        document.getElementById('age').value = this.getAttribute('data-age');
-        document.getElementById('appointmentDate').value = this.getAttribute('data-appointment-date');
-        document.getElementById('appointmentTime').value = this.getAttribute('data-appointment-time');
-        document.getElementById('appointmentEndTime').value = this.getAttribute('data-appointment-end-time');
-        document.getElementById('status').value = this.getAttribute('data-status');
+        userIdToDelete = this.getAttribute('data-user-id');
       });
     });
 
-    // Triggered when the "Update" button in the modal is clicked
-    document.getElementById('updateCustomerBtn').addEventListener('click', function() {
-      if (userIdToEdit) {
-        // Get the updated data from the form
-        const updatedData = {
-          person_name: document.getElementById('personName').value,
-          phone_number: document.getElementById('phoneNumber').value,
-          age: document.getElementById('age').value,
-          appointment_date: document.getElementById('appointmentDate').value,
-          appointment_time: document.getElementById('appointmentTime').value,
-          appointment_end_time: document.getElementById('appointmentEndTime').value,
-          status: document.getElementById('status').value
-        };
-
-        // Perform the update via a POST request
-        fetch(`/edit-customer/${userIdToEdit}/`, {
+    // Triggered when the "Confirm Delete" button in the modal is clicked
+    document.getElementById('confirmDelete').addEventListener('click', function() {
+      if (userIdToDelete) {
+        // Perform the deletion via a POST request
+        fetch(`/delete-customer/${userIdToDelete}/`, {
           method: 'POST',
           headers: {
             'X-CSRFToken': '{{ csrf_token }}',
             'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(updatedData)
+          }
         })
         .then(response => response.json())
         .then(data => {
           if (data.success) {
             // Hide the modal
-            let modal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
+            let modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
             modal.hide();
-
-            // Update the corresponding row in the table
-            const row = document.getElementById(`customer-${userIdToEdit}`);
-            row.querySelector('td:nth-child(2)').innerText = updatedData.person_name;
-            row.querySelector('td:nth-child(3)').innerText = updatedData.phone_number;
-            row.querySelector('td:nth-child(4)').innerText = updatedData.age;
-            row.querySelector('td:nth-child(5)').innerText = updatedData.appointment_date;
-            row.querySelector('td:nth-child(6)').innerText = updatedData.appointment_time;
-            row.querySelector('td:nth-child(7)').innerText = updatedData.appointment_end_time;
-            row.querySelector('td:nth-child(8)').innerHTML = `<span class="badge bg-danger">${updatedData.status}</span>`;
+            
+            // Optionally, remove the deleted row from the table
+            location.reload(); // Refresh the page to update the table
           }
         });
       }

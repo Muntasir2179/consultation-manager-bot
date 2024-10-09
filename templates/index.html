@@ -415,10 +415,10 @@
         document.getElementById('personName').value = this.getAttribute('data-person-name');
         document.getElementById('phoneNumber').value = this.getAttribute('data-phone-number');
         document.getElementById('age').value = this.getAttribute('data-age');
-        document.getElementById('appointmentDate').value = this.getAttribute('data-appointment-date');
-        document.getElementById('appointmentTime').value = this.getAttribute('data-appointment-time');
-        document.getElementById('appointmentEndTime').value = this.getAttribute('data-appointment-end-time');
-        
+        document.getElementById('appointmentDate').value = new Date(this.getAttribute('data-appointment-date')).toLocaleDateString('en-GB').split('/').reverse().join('-');
+        document.getElementById('appointmentTime').value = formatTime(this.getAttribute('data-appointment-time'));
+        document.getElementById('appointmentEndTime').value = formatTime(this.getAttribute('data-appointment-end-time'));
+
         // For the status field, check if it's a dropdown (select) or a text input
         const statusField = document.getElementById('appointmentStatus');
         const status = this.getAttribute('data-status');
@@ -531,6 +531,34 @@
       }
     });
   });
+
+  function formatTime(timeString) {
+    // Convert to lowercase and remove any periods
+    timeString = timeString.toLowerCase().replace(/\./g, '');
+
+    // Split the time into parts
+    let [time, modifier] = timeString.split(' ');
+
+    // Split hours and minutes
+    let [hours, minutes] = time.split(':');
+
+    // Convert hours to a number
+    hours = parseInt(hours, 10);
+
+    // Convert to 24-hour format
+    if (modifier === 'p.m.' && hours < 12) {
+        hours += 12;
+    } else if (modifier === 'a.m.' && hours === 12) {
+        hours = 0;
+    }
+
+    // Pad hours and minutes to ensure two digits
+    hours = String(hours).padStart(2, '0');
+    minutes = String(minutes).padStart(2, '0');
+
+    // Return the formatted time
+    return `${hours}:${minutes}`;
+  }
   </script>
   <script src="/static/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="/static/libs/simplebar/simplebar.min.js"></script>

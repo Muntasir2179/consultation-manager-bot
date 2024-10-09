@@ -12,7 +12,7 @@ class Customer(models.Model):
         (PENDING, 'Pending'),
         (APPROVED, 'Approved'),
         (REJECTED, 'Rejected'),
-        (COMPLETE, 'Complete')
+        (COMPLETE, 'Completed')
     ]
 
     user_id = models.AutoField(primary_key=True)

@@ -1,6 +1,8 @@
-from django.shortcuts import render, HttpResponse, redirect
+from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
+from django.http import JsonResponse
 from .models import Customer, Users
+import json
 
 # for chatbot agent
 from .agent import DatabaseAgent
@@ -86,7 +88,37 @@ def register(request):
                 return render(request=request, template_name="register.html")
 
 
+# function for signout
 def signout(request):
     # Clear all session data
     request.session.flush()
     return redirect('login')
+
+
+# function for editing data
+def edit_customer(request, user_id: int):
+    if request.method == 'POST':
+        print(user_id)
+        customer = get_object_or_404(Customer, user_id=user_id)
+        data = json.loads(request.body)
+
+        # Update the customer with new data
+        customer.person_name = data.get('person_name')
+        customer.phone_number = data.get('phone_number')
+        customer.age = data.get('age')
+        customer.appointment_date = data.get('appointment_date')
+        customer.appointment_time = data.get('appointment_time')
+        customer.appointment_end_time = data.get('appointment_end_time')
+        customer.status = data.get('status')
+        customer.save()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
+
+
+# function for delete data
+def delete_customer(request, user_id: int):
+    if request.method == 'POST':
+        customer = get_object_or_404(Customer, user_id=user_id)
+        customer.delete()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False})

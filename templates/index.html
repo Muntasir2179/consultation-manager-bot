@@ -201,8 +201,18 @@
             <div class="row">
               <div class="col-lg-12">
                 <div class="card">
-                  <div class="card-header">
+                  <div
+                    class="card-header d-flex justify-content-between align-items-center"
+                  >
                     <h5 class="card-title mb-0">Schedules</h5>
+                    <button
+                      type="button"
+                      class="btn btn-success"
+                      data-bs-toggle="modal"
+                      data-bs-target="#addCustomerModal"
+                    >
+                      <i class="ri-add-line"></i> Add Customer
+                    </button>
                   </div>
                   <div class="card-body">
                     <table
@@ -472,7 +482,7 @@
                 status: document.getElementById("appointmentStatus").value,
               };
 
-              console.log("updatedData", updatedData);
+              // console.log("updatedData", updatedData);
               // Perform the update via a POST request
               fetch(`/edit-customer/${userIdToEdit}/`, {
                 method: "POST",
@@ -588,25 +598,109 @@
           });
       });
 
+      {% comment %} add customer button action {% endcomment %}
+      document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('addCustomerBtn').addEventListener('click', function() {
+            // Get form data
+            let formData = new FormData(document.getElementById('addCustomerForm'));
+
+            // Perform the AJAX request
+            fetch('/add-customer/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Close the modal
+                    let modal = bootstrap.Modal.getInstance(document.getElementById('addCustomerModal'));
+                    modal.hide();
+
+                    let statusBadge = "bg-primary";
+                    if (data.status == "Rejected") {
+                      statusBadge = "bg-danger";
+                    } else if (data.status == "Completed") {
+                      statusBadge = "bg-success";
+                    } else if (data.status == "Pending") {
+                      statusBadge = "bg-warning";
+                    }
+
+                    // Add new customer to the table (dynamically update the page)
+                    let newRow = `
+                    <tr id="customer-${data.customer.id}">
+                        <td>${data.customer.user_id}</td>
+                        <td>${data.customer.person_name}</td>
+                        <td>${data.customer.phone_number}</td>
+                        <td>${data.customer.age}</td>
+                        <td>${data.customer.appointment_date}</td>
+                        <td>${data.customer.appointment_time}</td>
+                        <td>${data.customer.appointment_end_time}</td>
+                        <td><span class="badge ${statusBadge}">${data.customer.status}</span></td>
+                        <td>
+                          <div class="dropdown d-inline-block">
+                            <button class="btn btn-soft-secondary btn-sm dropdown" type="button"
+                              data-bs-toggle="dropdown" aria-expanded="false">
+                              <i class="ri-more-fill align-middle"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                              <li>
+                                <a href="#!" class="dropdown-item"><i
+                                    class="ri-eye-fill align-bottom me-2 text-muted"></i>
+                                  View</a>
+                              </li>
+                              <li>
+                                <a class="dropdown-item edit-item-btn"><i
+                                    class="ri-pencil-fill align-bottom me-2 text-muted"></i>
+                                  Edit</a>
+                              </li>
+                              <li>
+                                <a class="dropdown-item remove-item-btn"><i
+                                    class="ri-delete-bin-fill align-bottom me-2 text-muted"></i>
+                                  Delete</a>
+                              </li>
+                            </ul>
+                          </div>
+                        </td>
+                    </tr>`;
+
+                    document.querySelector('tbody').insertAdjacentHTML('beforeend', newRow);
+
+                    // Reload the page after adding the customer
+                    location.reload();
+                } else {
+                    // Show an error message if needed
+                    alert('Error adding customer.');
+                }
+            })
+            .catch(error => {
+                // Handle network or server errors
+                alert('An error occurred. Please try again.');
+            });
+        });
+      });
+
       // function for formating time
       function formatTime(timeString) {
         // Convert to lowercase and remove any periods
         timeString = timeString.toLowerCase().replace(/\./g, "");
 
-        // Split the time into parts
+        // Split the time into parts (hours and modifier)
         let [time, modifier] = timeString.split(" ");
 
-        // Split hours and minutes
-        let [hours, minutes] = time.split(":");
+        // Split hours and minutes (if they exist)
+        let [hours, minutes] = time.includes(":") ? time.split(":") : [time, "00"];
 
         // Convert hours to a number
         hours = parseInt(hours, 10);
 
         // Convert to 24-hour format
-        if (modifier === "p.m." && hours < 12) {
-          hours += 12;
-        } else if (modifier === "a.m." && hours === 12) {
-          hours = 0;
+        if (modifier === "pm" && hours < 12) {
+            hours += 12;
+        } else if (modifier === "am" && hours === 12) {
+            hours = 0;
         }
 
         // Pad hours and minutes to ensure two digits

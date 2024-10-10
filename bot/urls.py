@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import fetch_data, register, login, chat, get_response, signout, delete_customer, edit_customer
+from .views import fetch_data, register, login, chat, get_response, signout, delete_customer, edit_customer, add_customer
 
 
 urlpatterns = [
@@ -11,4 +11,5 @@ urlpatterns = [
     path('signout/', view=signout, name="signout"),
     path('delete-customer/<int:user_id>/', view=delete_customer, name="delete_customer"),
     path('edit-customer/<int:user_id>/', view=edit_customer, name='edit_customer'),
+    path('add-customer/', view=add_customer, name='add_customer'),
 ]

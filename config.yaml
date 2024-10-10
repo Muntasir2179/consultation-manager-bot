@@ -1,0 +1,10 @@
+agent-model-name: llama3-groq-70b-8192-tool-use-preview
+error-model-name: llama-3.1-70b-versatile
+
+database:
+    host: localhost
+    user: root
+    password: 
+    database: db
+    table: mytable
+

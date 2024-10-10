@@ -1,4 +1,5 @@
 from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.forms import UserCreationForm
 from django.http import JsonResponse
 from .models import Customer, Users
@@ -125,3 +126,44 @@ def delete_customer(request, user_id: int):
         return JsonResponse({'success': False})
     else:
         return redirect('login')
+
+
+# function for adding customer appointment
+@csrf_exempt
+def add_customer(request):
+    if request.method == 'POST':
+        person_name = request.POST.get('add_person_name')
+        phone_number = request.POST.get('add_phone_number')
+        age = request.POST.get('add_age')
+        appointment_date = request.POST.get('add_appointment_date')
+        appointment_time = request.POST.get('add_appointment_time')
+        appointment_end_time = request.POST.get('add_appointment_end_time')
+        status = request.POST.get('add_status')
+
+        # Create a new customer
+        customer = Customer.objects.create(
+            person_name=person_name,
+            phone_number=phone_number,
+            age=age,
+            appointment_date=appointment_date,
+            appointment_time=appointment_time,
+            appointment_end_time=appointment_end_time,
+            status=status
+        )
+
+        # Return success response with customer data
+        return JsonResponse({
+            'success': True,
+            'customer': {
+                'user_id': customer.user_id,  # assuming user_id is auto-generated
+                'person_name': customer.person_name,
+                'phone_number': customer.phone_number,
+                'age': customer.age,
+                'appointment_date': customer.appointment_date,
+                'appointment_time': customer.appointment_time,
+                'appointment_end_time': customer.appointment_end_time,
+                'status': customer.status
+            }
+        })
+    
+    return JsonResponse({'success': False})

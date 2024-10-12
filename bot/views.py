@@ -23,7 +23,11 @@ def fetch_data(request):
                                                 'appointment_time',
                                                 'appointment_end_time',
                                                 'status')
-        return render(request=request, template_name='index.html', context={'content': customers})
+        context = {
+            'content': customers,
+            'username': request.session['username']
+        }
+        return render(request=request, template_name='index.html', context=context)
     else:
         return redirect('login')
 
@@ -52,7 +56,6 @@ def login(request):
             user = Users.objects.get(username=input_username)
             if user.password == input_password:
                 request.session['username'] = input_username    # store the username in the session
-                print(input_username, input_password)
                 return redirect("fetch_data")
         except:
             return render(request=request, template_name='login.html')
@@ -167,3 +170,8 @@ def add_customer(request):
         })
     
     return JsonResponse({'success': False})
+
+
+# function for handling bad request
+def custom_404_view(request, exception=None):
+    return render(request, '404.html', {}, status=404)

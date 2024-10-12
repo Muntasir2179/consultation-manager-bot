@@ -1,6 +1,9 @@
 from django.urls import path
+from django.conf.urls import handler404
 from .views import fetch_data, register, login, chat, get_response, signout, delete_customer, edit_customer, add_customer
 
+
+handler404 = 'bot.views.custom_404_view'
 
 urlpatterns = [
     path("", view=fetch_data, name='fetch_data'),

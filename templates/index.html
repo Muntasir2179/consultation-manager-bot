@@ -1,49 +1,25 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html
-  lang="en"
-  data-layout="vertical"
-  data-topbar="light"
-  data-sidebar="dark"
-  data-sidebar-size="lg"
-  data-sidebar-image="none"
-  data-preloader="disable"
->
+<html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none" data-preloader="disable">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8"/>
     <title>Schedules Management</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      content="Premium Multipurpose Admin & Dashboard Template"
-      name="description"
-    />
-    <meta content="Themesbrand" name="author" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description"/>
+    <meta content="Themesbrand" name="author"/>
 
-    <link rel="shortcut icon" href="/static/images/favicon.ico" />
+    <link rel="shortcut icon" href="/static/images/favicon.ico"/>
 
-    <link
-      rel="stylesheet"
-      href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css"
-    />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css"/>
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css"/>
 
     <script src="/static/js/layout.js"></script>
-    <link
-      href="/static/css/bootstrap.min.css"
-      rel="stylesheet"
-      type="text/css"
-    />
-    <link href="/static/css/icons.min.css" rel="stylesheet" type="text/css" />
-    <link href="/static/css/app.min.css" rel="stylesheet" type="text/css" />
-    <link href="/static/css/custom.min.css" rel="stylesheet" type="text/css" />
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/static/css/icons.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/static/css/app.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/static/css/custom.min.css" rel="stylesheet" type="text/css"/>
   </head>
 
   <body>
@@ -52,12 +28,8 @@
         <div class="layout-width">
           <div class="navbar-header">
             <div class="d-flex">
-              <!-- expander button -->
-              <button
-                type="button"
-                class="btn btn-sm px-3 fs-16 header-item vertical-menu-btn topnav-hamburger"
-                id="topnav-hamburger-icon"
-              >
+              {% comment %} expander button {% endcomment %}
+              <button type="button" class="btn btn-sm px-3 fs-16 header-item vertical-menu-btn topnav-hamburger" id="topnav-hamburger-icon">
                 <span class="hamburger-icon">
                   <span></span>
                   <span></span>
@@ -67,74 +39,49 @@
             </div>
 
             <div class="d-flex align-items-center">
-              <!-- full screen button -->
+              {% comment %} full screen button {% endcomment %}
               <div class="ms-1 header-item d-none d-sm-flex">
-                <button
-                  type="button"
-                  class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle"
-                  data-toggle="fullscreen"
-                >
+                <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" data-toggle="fullscreen">
                   <i class="bx bx-fullscreen fs-22"></i>
                 </button>
               </div>
 
-              <!-- theme toggler button -->
+              {% comment %} theme toggler button  {% endcomment %}
               <div class="ms-1 header-item d-none d-sm-flex">
-                <button
-                  type="button"
-                  class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle light-dark-mode"
-                >
+                <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle light-dark-mode">
                   <i class="bx bx-moon fs-22"></i>
                 </button>
               </div>
 
-              <!-- profile starts -->
+              {% comment %} profile starts  {% endcomment %}
               <div class="dropdown ms-sm-3 header-item topbar-user">
-                <button
-                  type="button"
-                  class="btn"
-                  id="page-header-user-dropdown"
-                  data-bs-toggle="dropdown"
-                  aria-haspopup="true"
-                  aria-expanded="false"
-                >
+                <button type="button" class="btn" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   <span class="d-flex align-items-center">
-                    <img
-                      class="rounded-circle header-profile-user"
-                      src="static/images/users/avatar-1.jpg"
-                      alt="Header Avatar"
-                    />
+                    <img class="rounded-circle header-profile-user" src="static/images/users/avatar-0.jpg" alt="Header Avatar"/>
                     <span class="text-start ms-xl-2">
-                      <span
-                        class="d-none d-xl-inline-block ms-1 fw-medium user-name-text"
-                        >Anna Adame</span
-                      >
+                      <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">{{username}}</span>
                     </span>
                   </span>
                 </button>
 
                 <div class="dropdown-menu dropdown-menu-end">
-                  <h6 class="dropdown-header">Welcome Anna!</h6>
-                  <a class="dropdown-item" href="signout/"
-                    ><i
-                      class="mdi mdi-logout text-muted fs-16 align-middle me-1"
-                    ></i>
-                    <span class="align-middle" data-key="t-logout"
-                      >Logout</span
-                    ></a
-                  >
+                  <h6 class="dropdown-header">Welcome {{username}}</h6>
+                  <a class="dropdown-item" href="signout/">
+                    <i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i>
+                    <span class="align-middle" data-key="t-logout">Logout</span>
+                  </a>
                 </div>
               </div>
-              <!-- profile ends -->
+              {% comment %} profile ends  {% endcomment %}
             </div>
           </div>
         </div>
       </header>
 
-      <!-- sidebar -->
+       {% comment %} sidebar  {% endcomment %}
       <div class="app-menu navbar-menu">
         <div class="navbar-brand-box">
-          <a href="index.html" class="logo logo-dark">
+          <a href="{% url "fetch_data" %}" class="logo logo-dark">
             <span class="logo-sm">
               <img src="/static/images/logo-sm.png" alt="" height="22" />
             </span>
@@ -142,7 +89,7 @@
               <img src="/static/images/logo-dark.png" alt="" height="17" />
             </span>
           </a>
-          <a href="index.html" class="logo logo-light">
+          <a href="{% url "fetch_data" %}" class="logo logo-light">
             <span class="logo-sm">
               <img src="/static/images/logo-sm.png" alt="" height="22" />
             </span>
@@ -150,11 +97,7 @@
               <img src="/static/images/logo-light.png" alt="" height="17" />
             </span>
           </a>
-          <button
-            type="button"
-            class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover"
-            id="vertical-hover"
-          >
+          <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover">
             <i class="ri-record-circle-line"></i>
           </button>
         </div>
@@ -164,9 +107,8 @@
             <div id="two-column-menu"></div>
             <ul class="navbar-nav" id="navbar-nav">
               <li class="menu-title"><span data-key="t-menu">Menu</span></li>
-
               <li class="nav-item">
-                <a class="nav-link menu-link" href="index.html">
+                <a class="nav-link menu-link" href="{% url "fetch_data" %}">
                   <i class="ri-honour-line"></i>
                   <span data-key="t-widgets">Schedules</span>
                 </a>
@@ -176,15 +118,13 @@
         </div>
       </div>
 
-      <!-- Start right Content here -->
+      {% comment %} Start right Content here {% endcomment %}
       <div class="main-content">
         <div class="page-content">
           <div class="container-fluid">
             <div class="row">
               <div class="col-12">
-                <div
-                  class="page-title-box d-sm-flex align-items-center justify-content-between"
-                >
+                <div class="page-title-box d-sm-flex align-items-center justify-content-between">
                   <h4 class="mb-sm-0">Schedules</h4>
                   <div class="page-title-right">
                     <ol class="breadcrumb m-0">
@@ -201,25 +141,14 @@
             <div class="row">
               <div class="col-lg-12">
                 <div class="card">
-                  <div
-                    class="card-header d-flex justify-content-between align-items-center"
-                  >
+                  <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0">Schedules</h5>
-                    <button
-                      type="button"
-                      class="btn btn-success"
-                      data-bs-toggle="modal"
-                      data-bs-target="#addCustomerModal"
-                    >
-                      <i class="ri-add-line"></i> Add Customer
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCustomerModal">
+                      <i class="ri-add-line"></i>Add Customer
                     </button>
                   </div>
                   <div class="card-body">
-                    <table
-                      id="example"
-                      class="table table-bordered dt-responsive nowrap table-striped align-middle"
-                      style="width: 100%"
-                    >
+                    <table id="example" class="table table-bordered dt-responsive nowrap table-striped align-middle" style="width: 100%">
                       <thead>
                         <tr>
                           <th data-ordering="false">User ID</th>
@@ -245,38 +174,23 @@
                           <td>{{customer.appointment_end_time}}</td>
                           <td>
                             {% if customer.status == "Approved" %}
-                            <span class="badge bg-primary"
-                              >{{customer.status}}</span
-                            >
+                            <span class="badge bg-primary">{{customer.status}}</span>
                             {% elif customer.status == "Pending" %}
-                            <span class="badge bg-warning"
-                              >{{customer.status}}</span
-                            >
+                            <span class="badge bg-warning">{{customer.status}}</span>
                             {% elif customer.status == "Completed" %}
-                            <span class="badge bg-success"
-                              >{{customer.status}}</span
-                            >
+                            <span class="badge bg-success">{{customer.status}}</span>
                             {% elif customer.status == "Rejected" %}
-                            <span class="badge bg-danger"
-                              >{{customer.status}}</span
-                            >
+                            <span class="badge bg-danger">{{customer.status}}</span>
                             {% endif %}
                           </td>
                           <td>
                             <div class="dropdown d-inline-block">
-                              <button
-                                class="btn btn-soft-secondary btn-sm dropdown"
-                                type="button"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false"
-                              >
+                              <button class="btn btn-soft-secondary btn-sm dropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="ri-more-fill align-middle"></i>
                               </button>
                               <ul class="dropdown-menu dropdown-menu-end">
                                 <li>
-                                  <a
-                                    href="#!"
-                                    class="dropdown-item view-item-btn"
+                                  <a href="#!" class="dropdown-item view-item-btn"
                                     data-bs-toggle="modal"
                                     data-bs-target="#viewCustomerModal"
                                     data-userid="{{customer.user_id}}"
@@ -286,17 +200,13 @@
                                     data-appointmentdate="{{customer.appointment_date}}"
                                     data-appointmenttime="{{customer.appointment_time}}"
                                     data-appointmentendtime="{{customer.appointment_end_time}}"
-                                    data-status="{{customer.status}}"
-                                  >
-                                    <i
-                                      class="ri-eye-fill align-bottom me-2 text-muted"
-                                    ></i>
+                                    data-status="{{customer.status}}">
+                                    <i class="ri-eye-fill align-bottom me-2 text-muted"></i>
                                     View
                                   </a>
                                 </li>
                                 <li>
-                                  <a
-                                    class="dropdown-item edit-item-btn"
+                                  <a href="#!" class="dropdown-item edit-item-btn"
                                     data-bs-toggle="modal"
                                     data-bs-target="#editModal"
                                     data-user-id="{{ customer.user_id }}"
@@ -306,25 +216,14 @@
                                     data-appointment-date="{{ customer.appointment_date }}"
                                     data-appointment-time="{{ customer.appointment_time }}"
                                     data-appointment-end-time="{{ customer.appointment_end_time }}"
-                                    data-status="{{ customer.status }}"
-                                  >
-                                    <i
-                                      class="ri-pencil-fill align-bottom me-2 text-muted"
-                                    ></i>
+                                    data-status="{{ customer.status }}">
+                                    <i class="ri-pencil-fill align-bottom me-2 text-muted"></i>
                                     Edit
                                   </a>
                                 </li>
                                 <li>
-                                  <a
-                                    href="#!"
-                                    class="dropdown-item remove-item-btn"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#deleteModal"
-                                    data-user-id="{{ customer.user_id }}"
-                                  >
-                                    <i
-                                      class="ri-delete-bin-fill align-bottom me-2 text-muted"
-                                    ></i>
+                                  <a href="#!" class="dropdown-item remove-item-btn" data-bs-toggle="modal" data-bs-target="#deleteModal" data-user-id="{{ customer.user_id }}">
+                                    <i class="ri-delete-bin-fill align-bottom me-2 text-muted"></i>
                                     Delete
                                   </a>
                                 </li>
@@ -362,11 +261,7 @@
       </div>
     </div>
 
-    <button
-      onclick="topFunction()"
-      class="btn btn-danger btn-icon"
-      id="back-to-top"
-    >
+    <button onclick="topFunction()" class="btn btn-danger btn-icon" id="back-to-top">
       <i class="ri-arrow-up-line"></i>
     </button>
 
@@ -718,11 +613,7 @@
     <script src="/static/js/pages/plugins/lord-icon-2.1.0.js"></script>
     <script src="/static/js/plugins.js"></script>
 
-    <script
-      src="https://code.jquery.com/jquery-3.6.0.min.js"
-      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-      crossorigin="anonymous"
-    ></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
     {% comment %} datatable js {% endcomment %}
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>

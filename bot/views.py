@@ -3,13 +3,19 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.forms import UserCreationForm
 from django.http import JsonResponse
 from .models import Customer, Users
-import json
+import json, os
+from twilio.rest import Client
+
 
 # for chatbot agent
 from .agent import DatabaseAgent
 
 
 database_agent = DatabaseAgent()
+
+# creating twilio client
+client = Client(os.environ["TWILIO_ACCOUNT_SID"], os.environ["TWILIO_AUTH_TOKEN"])
+
 
 # function to fetch all the data to the dashboard
 def fetch_data(request):
@@ -23,7 +29,11 @@ def fetch_data(request):
                                                 'appointment_time',
                                                 'appointment_end_time',
                                                 'status')
-        return render(request=request, template_name='index.html', context={'content': customers})
+        context = {
+            'content': customers,
+            'username': request.session['username']
+        }
+        return render(request=request, template_name='index.html', context=context)
     else:
         return redirect('login')
 
@@ -40,6 +50,25 @@ def get_response(request):
     return HttpResponse(agent_response)
 
 
+# function for sending response to whatsapp
+@csrf_exempt
+def get_response_for_whatsapp(request):
+    sender_name = request.POST["ProfileName"]
+    message_type = request.POST["MessageType"]
+    whatsapp_id = request.POST["WaId"]
+    message_status = request.POST["SmsStatus"]
+    message_content = request.POST["Body"]
+    receiver_number = request.POST["To"]
+    sender_number = request.POST["From"]
+
+    agent_response = database_agent.get_response(chat_session_id=sender_number, query=message_content)
+    
+    client.messages.create(from_=receiver_number,
+                           body=agent_response,
+                           to=sender_number)
+    return HttpResponse(content="Hi I am Muntasir")
+
+
 # function for signin
 def login(request):
     if request.method == "GET":
@@ -52,7 +81,6 @@ def login(request):
             user = Users.objects.get(username=input_username)
             if user.password == input_password:
                 request.session['username'] = input_username    # store the username in the session
-                print(input_username, input_password)
                 return redirect("fetch_data")
         except:
             return render(request=request, template_name='login.html')
@@ -167,3 +195,8 @@ def add_customer(request):
         })
     
     return JsonResponse({'success': False})
+
+
+# function for handling bad request
+def custom_404_view(request, exception=None):
+    return render(request, '404.html', {}, status=404)

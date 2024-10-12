@@ -2,13 +2,14 @@ import yaml
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from langchain.agents import AgentExecutor
-from langchain_core.messages import HumanMessage, AIMessage
+# from langchain_core.messages import HumanMessage, AIMessage
 from langchain.agents.format_scratchpad import format_to_tool_messages
 from langchain.agents.output_parsers import ToolsAgentOutputParser
 
 # custom tools and prompt
 from .tools import insert_data, search_data, update_data, delete_data
 from .prompt import custom_prompt
+from .chatstore import ChatHistoryHandler
 
 
 # loading the config file and environment variables
@@ -32,17 +33,22 @@ class DatabaseAgent:
             | ToolsAgentOutputParser()
         )
         self.__agent_executor = AgentExecutor(agent=self.__agent, tools=self.__tools, verbose=True)
-        self.__chat_history = []
+        self.__chat_history_handler = ChatHistoryHandler()
     
     
-    def get_response(self, query):
-        response = self.__agent_executor.invoke(input={"input": query, "chat_history": self.__chat_history})
-        # appending user query and agent response to the chat history
-        self.__chat_history.extend(
-            [
-                HumanMessage(content=query),
-                AIMessage(content=response["output"])
-            ]
-        )
+    def get_response(self, chat_session_id, query):
+        response = self.__agent_executor.invoke(input={"input": query, "chat_history": self.__chat_history_handler.get_chat_history(chat_session_id)})
+        # appending user query and agent response to the chat history in firebase
+        self.__chat_history_handler.add_query(chat_session_id=chat_session_id, query_text=query)
+        self.__chat_history_handler.add_response(chat_session_id=chat_session_id, response_text=response["output"])
         return response["output"]
 
+
+if __name__ == "__main__":
+    agent = DatabaseAgent()
+    while True:
+        query = input("You: ")
+        if query.lower() == "exit":
+            break
+        response = agent.get_response(chat_session_id="01308457363", query=query)
+        print(response)

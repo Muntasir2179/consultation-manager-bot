@@ -3,13 +3,19 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.forms import UserCreationForm
 from django.http import JsonResponse
 from .models import Customer, Users
-import json
+import json, os
+from twilio.rest import Client
+
 
 # for chatbot agent
 from .agent import DatabaseAgent
 
 
 database_agent = DatabaseAgent()
+
+# creating twilio client
+client = Client(os.environ["TWILIO_ACCOUNT_SID"], os.environ["TWILIO_AUTH_TOKEN"])
+
 
 # function to fetch all the data to the dashboard
 def fetch_data(request):
@@ -42,6 +48,25 @@ def get_response(request):
     user_message = request.GET.get('userMessage')
     agent_response = database_agent.get_response(query=user_message)
     return HttpResponse(agent_response)
+
+
+# function for sending response to whatsapp
+@csrf_exempt
+def get_response_for_whatsapp(request):
+    sender_name = request.POST["ProfileName"]
+    message_type = request.POST["MessageType"]
+    whatsapp_id = request.POST["WaId"]
+    message_status = request.POST["SmsStatus"]
+    message_content = request.POST["Body"]
+    receiver_number = request.POST["To"]
+    sender_number = request.POST["From"]
+
+    agent_response = database_agent.get_response(chat_session_id=sender_number, query=message_content)
+    
+    client.messages.create(from_=receiver_number,
+                           body=agent_response,
+                           to=sender_number)
+    return HttpResponse(content="Hi I am Muntasir")
 
 
 # function for signin

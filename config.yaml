@@ -12,3 +12,5 @@ google-firestore:
     PROJECT_ID: appointment-schedule-manager
     SESSION_ID: user1_session_new
     COLLECTION_NAME: chat_history
+
+whatsapp-bot-number: whatsapp:+14155238886

@@ -2,7 +2,6 @@ import yaml
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from langchain.agents import AgentExecutor
-# from langchain_core.messages import HumanMessage, AIMessage
 from langchain.agents.format_scratchpad import format_to_tool_messages
 from langchain.agents.output_parsers import ToolsAgentOutputParser
 
@@ -42,13 +41,9 @@ class DatabaseAgent:
         self.__chat_history_handler.add_query(chat_session_id=chat_session_id, query_text=query)
         self.__chat_history_handler.add_response(chat_session_id=chat_session_id, response_text=response["output"])
         return response["output"]
+    
 
+    # function for adding feedback message to the chat history
+    def add_feedback_message_to_chat_history(self, chat_session_id, feedback_message):
+        self.__chat_history_handler.add_response(chat_session_id=chat_session_id, response_text=feedback_message)
 
-if __name__ == "__main__":
-    agent = DatabaseAgent()
-    while True:
-        query = input("You: ")
-        if query.lower() == "exit":
-            break
-        response = agent.get_response(chat_session_id="01308457363", query=query)
-        print(response)

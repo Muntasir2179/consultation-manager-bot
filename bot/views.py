@@ -3,18 +3,24 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.forms import UserCreationForm
 from django.http import JsonResponse
 from .models import Customer, Users
-import json, os
+import json, os, yaml
 from twilio.rest import Client
 
 
 # for chatbot agent
 from .agent import DatabaseAgent
+from .status_messages import data_update_message, status_approved_message, status_completed_message, status_rejected_message
 
 
 database_agent = DatabaseAgent()
 
 # creating twilio client
 client = Client(os.environ["TWILIO_ACCOUNT_SID"], os.environ["TWILIO_AUTH_TOKEN"])
+
+
+# loading the config file
+with open("config.yaml", "r") as f:
+    config = yaml.safe_load(f)
 
 
 # function to fetch all the data to the dashboard
@@ -122,13 +128,40 @@ def signout(request):
     return redirect('login')
 
 
+# function for sending feedback message
+def send_feedback_message(previous_status:str, customer:Customer):
+    message = """"""
+    if previous_status == customer.status:
+        message = data_update_message(customer)
+    elif customer.status == "Approved":
+        message = status_approved_message(customer)
+    elif customer.status == "Completed":
+        message = status_completed_message(customer)
+    elif customer.status == "Rejected":
+        message = status_rejected_message(customer)
+    
+    try:
+        client.messages.create(from_=config['whatsapp-bot-number'],
+                            body=message,
+                            to=f"whatsapp:+88{customer.phone_number}")
+        
+        # store the recent feedback message into the chat history of that specific user
+        database_agent.add_feedback_message_to_chat_history(chat_session_id=f"whatsapp:+88{customer.phone_number}",
+                                                            feedback_message=message)
+        return True
+    except:
+        return False
+
+
 # function for editing data
 def edit_customer(request, user_id: int):
     if "username" in request.session:
         if request.method == 'POST':
             customer = get_object_or_404(Customer, user_id=user_id)
             data = json.loads(request.body)
-
+            
+            previous_status = customer.status   # storing the previous status
+            
             # Update the customer with new data
             customer.person_name = data.get('person_name')
             customer.phone_number = data.get('phone_number')
@@ -138,7 +171,11 @@ def edit_customer(request, user_id: int):
             customer.appointment_end_time = data.get('appointment_end_time')
             customer.status = data.get('status')
             customer.save()
-            return JsonResponse({'success': True})
+
+            # trying to send feedback message and getting operation status to check if it is done successfully or not
+            operation_status = send_feedback_message(previous_status, customer)
+
+            return JsonResponse({'success': operation_status})
         return JsonResponse({'success': False})
     else:
         return redirect('login')

@@ -2,7 +2,6 @@ import yaml
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from langchain.agents import AgentExecutor
-# from langchain_core.messages import HumanMessage, AIMessage
 from langchain.agents.format_scratchpad import format_to_tool_messages
 from langchain.agents.output_parsers import ToolsAgentOutputParser
 

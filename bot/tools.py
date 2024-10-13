@@ -364,36 +364,3 @@ def delete_data(user_id:int):
         print(e)
         return Chains.error_generator_chain.invoke(input={"input": f"{e}"})
 
-
-
-# if __name__ == "__main__":
-    # inserting data using tool
-    # message = insert_data.invoke(input={
-    #     "person_name": "Anisur Rahman",
-    #     "phone_number": "01308457363",
-    #     "age": 65,
-    #     "appointment_date": "2024-12-02",
-    #     "appointment_time": "12:40:00"
-    # })
-    # print(message)
-
-    # searching data using tool
-    # search_result = search_data.invoke(input={
-    #     "user_id": 4
-    # })
-    # print(search_result)
-    
-    # updating data using tool
-    # update_message = update_data.invoke(input={
-    #     "user_id": 4,
-    #     "person_name": "Anisur Rahman",
-    #     "phone_number": "01308457363",
-    #     "age": 29,
-    #     "appointment_date": "2024-12-05",
-    #     "appointment_time": "11:58:00"
-    # })
-    # print(update_message)
-
-    # deleting data using tool
-    # message = delete_data.invoke(input={"user_id": 4})
-    # print(message)

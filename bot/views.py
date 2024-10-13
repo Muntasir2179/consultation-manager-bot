@@ -72,7 +72,19 @@ def get_response_for_whatsapp(request):
     client.messages.create(from_=receiver_number,
                            body=agent_response,
                            to=sender_number)
-    return HttpResponse(content="Hi I am Muntasir")
+    
+    # checking if we do need to clear the chat history or not
+    if agent_response.__contains__("request have been posted.") or agent_response.__contains__("successfully booked"): 
+        # delete chat history when insertion is performed
+        database_agent.clear_chat_history(chat_session_id=sender_number)
+    elif agent_response.__contains__("Your appointment details have been updated."):
+        # delete chat history when update is performed
+        database_agent.clear_chat_history(chat_session_id=sender_number)
+    elif agent_response.__contains__("Appointment canceled for user id"):
+        # delete chat history when deletion is performed
+        database_agent.clear_chat_history(chat_session_id=sender_number)
+
+    return HttpResponse(content="Responding to whatsapp message.")
 
 
 # function for signin
@@ -175,6 +187,10 @@ def edit_customer(request, user_id: int):
             # trying to send feedback message and getting operation status to check if it is done successfully or not
             operation_status = send_feedback_message(previous_status, customer)
 
+            # delete the chat history when update is done
+            if operation_status:
+                database_agent.clear_chat_history(chat_session_id=f"whatsapp:+88{customer.phone_number}")
+
             return JsonResponse({'success': operation_status})
         return JsonResponse({'success': False})
     else:
@@ -186,6 +202,8 @@ def delete_customer(request, user_id: int):
     if "username" in request.session:
         if request.method == 'POST':
             customer = get_object_or_404(Customer, user_id=user_id)
+            # delete the chat history of the user who's appointment is canceled
+            database_agent.clear_chat_history(chat_session_id=f"whatsapp:+88{customer.phone_number}")
             customer.delete()
             return JsonResponse({'success': True})
         return JsonResponse({'success': False})

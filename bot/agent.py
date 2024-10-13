@@ -47,3 +47,7 @@ class DatabaseAgent:
     def add_feedback_message_to_chat_history(self, chat_session_id, feedback_message):
         self.__chat_history_handler.add_response(chat_session_id=chat_session_id, response_text=feedback_message)
 
+
+    # function for deleting chat history
+    def clear_chat_history(self, chat_session_id):
+        self.__chat_history_handler.delete_chat_history(chat_session_id=chat_session_id)

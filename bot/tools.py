@@ -200,21 +200,36 @@ def insert_data(phone_number: str, person_name: str, appointment_date: str, appo
     except Exception as e:
         return Chains.error_generator_chain.invoke(input={"input": f"{e}"})
 
-    # SQL query to insert data into the table
-    insert_query = f'''
-    INSERT INTO {config["database"]["table"]} (phone_number, person_name, age, appointment_date, appointment_time, appointment_end_time, status)
-    VALUES (%s, %s, %s, %s, %s, %s, %s)
-    '''
-    
-    # Data to insert
-    data = (phone_number, person_name, age, appointment_date, appointment_time, appointment_end_time, status)
 
     try:
-        conn, cursor = get_connection()
-        cursor.execute(insert_query, data)
-        conn.commit()
+        # SQL query to search and insert data into the table
+        insert_query = f'''
+        INSERT INTO {config["database"]["table"]} (phone_number, person_name, age, appointment_date, appointment_time, appointment_end_time, status)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        '''
+        search_query = f'''
+        SELECT * FROM {config["database"]["table"]} WHERE person_name = %s 
+        AND phone_number = %s
+        AND age = %s
+        AND appointment_date = %s
+        AND appointment_time = %s
+        AND appointment_end_time = %s
+        AND status = %s
+        '''
 
-        current_user_id = cursor.lastrowid
+        conn, cursor = get_connection()
+
+        # check if the data already exists in the database or not
+        cursor.execute(search_query, (person_name, phone_number, age, appointment_date, appointment_time, appointment_end_time, status))
+        search_result = cursor.fetchone()
+
+        if search_result is None:
+            cursor.execute(insert_query, (phone_number, person_name, age, appointment_date, appointment_time, appointment_end_time, status))
+            conn.commit()
+            current_user_id = cursor.lastrowid
+        else:
+            # found the match and assigning the found user id as the current user id
+            current_user_id = search_result[0]
 
         if conn.is_connected():
             cursor.close()
@@ -243,7 +258,6 @@ def search_data(user_id: str):
         return result if result is not None else f"No appointment booked with user id {user_id}."
     except Exception as e:
         return Chains.error_generator_chain.invoke(input={"input": f"{e}"})
-    
 
 
 # defining custom update_data tool

@@ -46,9 +46,12 @@ class BaseSchema(BaseModel):
 
     @classmethod
     def validate_user_id(cls, value):
-        if isinstance(value, int) and value > 0:
-            return value
-        return "Invalid user id. It should be a positive integer number."
+        if isinstance(value, str):
+            if len(value) == 23:
+                first, ph, d, t, s = value.split("_")
+                if first == 'SC' and len(ph) == 11 and len(d+t+s) == 6:
+                    return value
+        return "Invalid user id."
 
     @classmethod
     def validate_phone_number(cls, value:str):
@@ -172,7 +175,7 @@ class DatabaseDeleteSchema(BaseSchema):
 def format_search_result(result):
     if result is None:
         return None
-    user_id, phone_number, person_name, age, appointment_date, appointment_time, appointment_end_time, status = result
+    _, user_id, phone_number, person_name, age, appointment_date, appointment_time, appointment_end_time, status = result
     formatted_date = appointment_date.strftime("%d-%m-%Y")
     formatted_appointment_time = str(timedelta(seconds=appointment_time.seconds))[:-3]
     formatted_appointment_end_time = str(timedelta(seconds=appointment_end_time.seconds))[:-3]
@@ -200,36 +203,34 @@ def insert_data(phone_number: str, person_name: str, appointment_date: str, appo
     except Exception as e:
         return Chains.error_generator_chain.invoke(input={"input": f"{e}"})
 
-
+    user_id = get_user_id(phone_number=phone_number, sc_date=appointment_date, sc_time=appointment_time)
+    
     try:
+        conn, cursor = get_connection()
         # SQL query to search and insert data into the table
         insert_query = f'''
-        INSERT INTO {config["database"]["table"]} (phone_number, person_name, age, appointment_date, appointment_time, appointment_end_time, status)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO {config["database"]["table"]} (user_id, phone_number, person_name, age, appointment_date, appointment_time, appointment_end_time, status)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         '''
         search_query = f'''
-        SELECT * FROM {config["database"]["table"]} WHERE person_name = %s 
+        SELECT * FROM {config["database"]["table"]} WHERE user_id = %s
+        AND person_name = %s
         AND phone_number = %s
         AND age = %s
         AND appointment_date = %s
         AND appointment_time = %s
         AND appointment_end_time = %s
-        AND status = %s
         '''
-
-        conn, cursor = get_connection()
-
         # check if the data already exists in the database or not
-        cursor.execute(search_query, (person_name, phone_number, age, appointment_date, appointment_time, appointment_end_time, status))
+        cursor.execute(search_query, (user_id, person_name, phone_number, age, appointment_date, appointment_time, appointment_end_time))
         search_result = cursor.fetchone()
 
         if search_result is None:
-            cursor.execute(insert_query, (phone_number, person_name, age, appointment_date, appointment_time, appointment_end_time, status))
+            cursor.execute(insert_query, (user_id, phone_number, person_name, age, appointment_date, appointment_time, appointment_end_time, status))
             conn.commit()
-            current_user_id = cursor.lastrowid
+            current_user_id = user_id
         else:
-            # found the match and assigning the found user id as the current user id
-            current_user_id = search_result[0]
+            current_user_id = search_result[1]
 
         if conn.is_connected():
             cursor.close()
@@ -253,8 +254,8 @@ def search_data(user_id: str):
             cursor.close()
             conn.close()
         
-        if isinstance(user_id, str):
-            return user_id   # It will be an error message rather than user id
+        if user_id.__contains__("Invalid"):
+            return user_id    # it would be an error message
         return result if result is not None else f"No appointment booked with user id {user_id}."
     except Exception as e:
         return Chains.error_generator_chain.invoke(input={"input": f"{e}"})
@@ -345,7 +346,7 @@ def update_data(user_id,
             else:
                 return "No new information provided to update."
         else:
-            if isinstance(user_id, str):
+            if user_id.__contains__("Invalid"):
                 return user_id    # it will be an error message rather than user id
             return f"No appointment details found for user id {user_id}."
     except Exception as e:
@@ -354,7 +355,7 @@ def update_data(user_id,
 
 # defining custom delete_data tool
 @tool("delete_data", args_schema=DatabaseDeleteSchema, return_direct=True)
-def delete_data(user_id:int):
+def delete_data(user_id):
     """This function takes one argument which is the user id and deletes data with the id. Use this tool when you need to delete any data from the database table."""
     try:
         conn, cursor = get_connection()
@@ -371,10 +372,14 @@ def delete_data(user_id:int):
                 conn.close()
             return f"Appointment canceled for user id {user_id}."
         else:
-            if isinstance(user_id, str):
-                return user_id    # It will be an error message rather than user id
+            if user_id.__contains__("Invalid"):
+                return user_id    # it will be an error message rather than user id
             return f"No appointment details found with the user id {user_id}."
     except Exception as e:
-        print(e)
         return Chains.error_generator_chain.invoke(input={"input": f"{e}"})
+
+
+# function for generating unique user ID
+def get_user_id(phone_number, sc_date, sc_time):
+    return f"SC_{phone_number}_{sc_date[8:]}_{sc_time[:2]}_{sc_time[3:5]}"
 

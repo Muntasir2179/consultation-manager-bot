@@ -15,7 +15,8 @@ class Customer(models.Model):
         (COMPLETE, 'Completed')
     ]
 
-    user_id = models.AutoField(primary_key=True)
+    serial_no = models.AutoField(primary_key=True)
+    user_id = models.CharField(max_length=25, unique=True, null=False, blank=False)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     person_name = models.CharField(max_length=100)
     age = models.IntegerField(blank=True, null=True)

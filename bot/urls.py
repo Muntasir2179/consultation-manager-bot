@@ -12,8 +12,8 @@ urlpatterns = [
     path("chat/", view=chat, name='chat'),
     path("get-response/", view=get_response, name='get_response'),
     path('signout/', view=signout, name="signout"),
-    path('delete-customer/<int:user_id>/', view=delete_customer, name="delete_customer"),
-    path('edit-customer/<int:user_id>/', view=edit_customer, name='edit_customer'),
+    path('delete-customer/<str:user_id>/', view=delete_customer, name="delete_customer"),
+    path('edit-customer/<str:user_id>/', view=edit_customer, name='edit_customer'),
     path('add-customer/', view=add_customer, name='add_customer'),
     path('whatsapp-chat/', view=get_response_for_whatsapp, name="get_response_for_whatsapp"),
 ]

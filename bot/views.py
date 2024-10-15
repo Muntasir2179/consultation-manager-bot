@@ -8,6 +8,7 @@ from twilio.rest import Client
 
 
 # for chatbot agent
+from .tools import get_user_id
 from .agent import DatabaseAgent
 from .status_messages import data_update_message, status_approved_message, status_completed_message, status_rejected_message
 
@@ -166,7 +167,7 @@ def send_feedback_message(previous_status:str, customer:Customer):
 
 
 # function for editing data
-def edit_customer(request, user_id: int):
+def edit_customer(request, user_id:str):
     if "username" in request.session:
         if request.method == 'POST':
             customer = get_object_or_404(Customer, user_id=user_id)
@@ -198,7 +199,7 @@ def edit_customer(request, user_id: int):
 
 
 # function for delete data
-def delete_customer(request, user_id: int):
+def delete_customer(request, user_id:str):
     if "username" in request.session:
         if request.method == 'POST':
             customer = get_object_or_404(Customer, user_id=user_id)
@@ -223,8 +224,11 @@ def add_customer(request):
         appointment_end_time = request.POST.get('add_appointment_end_time')
         status = request.POST.get('add_status')
 
+        print(appointment_time)
+
         # Create a new customer
         customer = Customer.objects.create(
+            user_id=get_user_id(phone_number=phone_number, sc_date=appointment_date, sc_time=appointment_time),
             person_name=person_name,
             phone_number=phone_number,
             age=age,
@@ -255,3 +259,4 @@ def add_customer(request):
 # function for handling bad request
 def custom_404_view(request, exception=None):
     return render(request, '404.html', {}, status=404)
+

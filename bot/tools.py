@@ -228,14 +228,15 @@ def insert_data(phone_number: str, person_name: str, appointment_date: str, appo
         if search_result is None:
             cursor.execute(insert_query, (user_id, phone_number, person_name, age, appointment_date, appointment_time, appointment_end_time, status))
             conn.commit()
-            current_user_id = user_id
+            message = f"Your appointment request have been posted. Your ID number is {user_id}."
         else:
-            current_user_id = search_result[1]
+            # escaping creating new appointment
+            message = f"Your have already booked an appointment. Your ID number is {search_result[1]}."
 
         if conn.is_connected():
             cursor.close()
             conn.close()
-        return f"Your appointment request have been posted. Your ID number is {current_user_id}."
+        return message
     except Exception as e:
         return Chains.error_generator_chain.invoke(input={"input": f"{e}"})
 
